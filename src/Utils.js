@@ -69,8 +69,8 @@ export const isEqualTransform = (transform1, transform2) => {
     if (transform1 === undefined || transform2 === undefined) {
         return false;
     }
-    return round(transform1.top, 5) === round(transform2.top, 5) && 
-        round(transform1.left, 5) === round(transform2.left, 5) && 
+    return round(transform1.top, 5) === round(transform2.top, 5) &&
+        round(transform1.left, 5) === round(transform2.left, 5) &&
         round(transform1.scale, 5) === round(transform2.scale, 5);
 }
 
@@ -79,6 +79,7 @@ export const getAutofitScale = (containerDimensions, imageDimensions) => {
     if (! (imageWidth > 0 && imageHeight > 0) ) {
         return 1;
     }
+    console.log(`containerDimensions ${containerDimensions}`);
     return Math.min(
         containerDimensions.width / imageWidth,
         containerDimensions.height / imageHeight,
@@ -90,7 +91,7 @@ export const getMinScale = createSelector(
     state => state.containerDimensions,
     state => state.imageDimensions,
     (state, props) => props.minScale,
-    (containerDimensions, imageDimensions, minScaleProp) => 
+    (containerDimensions, imageDimensions, minScaleProp) =>
         String(minScaleProp).toLowerCase() === 'auto'
             ? getAutofitScale(containerDimensions, imageDimensions)
             : minScaleProp || 1

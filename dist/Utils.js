@@ -139,6 +139,7 @@ var getAutofitScale = function getAutofitScale(containerDimensions, imageDimensi
     return 1;
   }
 
+  console.log("containerDimensions ".concat(containerDimensions));
   return Math.min(containerDimensions.width / imageWidth, containerDimensions.height / imageHeight, 1);
 };
 
