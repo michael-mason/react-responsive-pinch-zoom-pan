@@ -13,8 +13,6 @@ var _reselect = require("reselect");
 
 var _warning = _interopRequireDefault(require("warning"));
 
-var _ZoomButtons = _interopRequireDefault(require("./ZoomButtons"));
-
 var _StateDebugView = _interopRequireDefault(require("./StateDebugView"));
 
 var _Utils = require("./Utils");
@@ -598,7 +596,6 @@ function (_React$Component) {
       var childElement = _react["default"].Children.only(this.props.children);
 
       var _this$props3 = this.props,
-          zoomButtons = _this$props3.zoomButtons,
           maxScale = _this$props3.maxScale,
           debug = _this$props3.debug;
       var scale = this.state.scale;
@@ -611,13 +608,7 @@ function (_React$Component) {
       };
       return _react["default"].createElement("div", {
         style: containerStyle
-      }, zoomButtons && this.isImageReady && this.isTransformInitialized && _react["default"].createElement(_ZoomButtons["default"], {
-        scale: scale,
-        minScale: (0, _Utils.getMinScale)(this.state, this.props),
-        maxScale: maxScale,
-        onZoomOutClick: this.handleZoomOutClick,
-        onZoomInClick: this.handleZoomInClick
-      }), debug && _react["default"].createElement(_StateDebugView["default"], _extends({}, this.state, {
+      }, debug && _react["default"].createElement(_StateDebugView["default"], _extends({}, this.state, {
         overflow: imageOverflow(this.state)
       })), _react["default"].cloneElement(childElement, {
         onTouchStart: this.handleTouchStart,
@@ -719,7 +710,6 @@ PinchZoomPan.defaultProps = {
   minScale: 'auto',
   maxScale: 1,
   position: 'topLeft',
-  zoomButtons: true,
   doubleTapBehavior: 'reset'
 };
 PinchZoomPan.propTypes = {
@@ -728,7 +718,6 @@ PinchZoomPan.propTypes = {
   minScale: _propTypes["default"].oneOfType([_propTypes["default"].number, _propTypes["default"].string]),
   maxScale: _propTypes["default"].number,
   position: _propTypes["default"].oneOf(['topLeft', 'center']),
-  zoomButtons: _propTypes["default"].bool,
   doubleTapBehavior: _propTypes["default"].oneOf(['reset', 'zoom']),
   initialTop: _propTypes["default"].number,
   initialLeft: _propTypes["default"].number
