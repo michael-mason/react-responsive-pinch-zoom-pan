@@ -45,7 +45,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var OVERZOOM_TOLERANCE = 0.05;
+var OVERZOOM_TOLERANCE = 0.0;
 var DOUBLE_TAP_THRESHOLD = 250;
 var ANIMATION_SPEED = 0.1;
 
