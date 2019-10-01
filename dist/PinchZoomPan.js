@@ -143,8 +143,6 @@ function (_React$Component) {
         _this.lastPinchLength = null;
 
         _this.pointerDown(touches[0]);
-
-        (0, _Utils.tryCancelEvent)(event); //suppress mouse events
       }
     });
 
@@ -152,10 +150,7 @@ function (_React$Component) {
       var touches = event.touches;
 
       if (touches.length === 2) {
-        _this.pinchChange(touches); //suppress viewport scaling on iOS
-
-
-        (0, _Utils.tryCancelEvent)(event);
+        _this.pinchChange(touches);
       } else if (touches.length === 1) {
         var requestedPan = _this.pan(touches[0]);
 
@@ -201,7 +196,6 @@ function (_React$Component) {
         }
 
         _this.lastPointerUpTimeStamp = event.timeStamp;
-        (0, _Utils.tryCancelEvent)(event); //suppress mouse events
       } //We allow transient +/-5% over-pinching.
       //Animate the bounce back to constraints if applicable.
 

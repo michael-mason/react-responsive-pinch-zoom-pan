@@ -7,7 +7,7 @@ import DebugView from './StateDebugView';
 
 import { snapToTarget, negate, constrain, getPinchLength, getPinchMidpoint, getRelativePosition, setRef, isEqualDimensions, getDimensions, getContainerDimensions, isEqualTransform, getAutofitScale, getMinScale, tryCancelEvent, getImageOverflow } from './Utils';
 
-const OVERZOOM_TOLERANCE = 0.05;
+const OVERZOOM_TOLERANCE = 0.0;
 const DOUBLE_TAP_THRESHOLD = 250;
 const ANIMATION_SPEED = 0.1;
 
@@ -90,7 +90,6 @@ export default class PinchZoomPan extends React.Component {
         else if (touches.length === 1) {
             this.lastPinchLength = null;
             this.pointerDown(touches[0]);
-            tryCancelEvent(event); //suppress mouse events
         }
     }
 
@@ -98,9 +97,6 @@ export default class PinchZoomPan extends React.Component {
         const touches = event.touches;
         if (touches.length === 2) {
             this.pinchChange(touches);
-
-            //suppress viewport scaling on iOS
-            tryCancelEvent(event);
         }
         else if (touches.length === 1) {
             const requestedPan = this.pan(touches[0]);
@@ -143,7 +139,6 @@ export default class PinchZoomPan extends React.Component {
                 this.doubleClick(pointerPosition);
             }
             this.lastPointerUpTimeStamp = event.timeStamp;
-            tryCancelEvent(event); //suppress mouse events
         }
 
         //We allow transient +/-5% over-pinching.
