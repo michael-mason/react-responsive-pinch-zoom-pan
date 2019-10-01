@@ -79,7 +79,7 @@ export const getAutofitScale = (containerDimensions, imageDimensions) => {
     if (! (imageWidth > 0 && imageHeight > 0) ) {
         return 1;
     }
-    console.log(`containerDimensions ${containerDimensions}`);
+
     return Math.min(
         containerDimensions.width / imageWidth,
         containerDimensions.height / imageHeight,
