@@ -13,6 +13,10 @@ var _reselect = require("reselect");
 
 var _warning = _interopRequireDefault(require("warning"));
 
+var _between = _interopRequireDefault(require("between.js"));
+
+var _easingFunctions = _interopRequireDefault(require("easing-functions"));
+
 var _StateDebugView = _interopRequireDefault(require("./StateDebugView"));
 
 var _Utils = require("./Utils");
@@ -298,6 +302,10 @@ function (_React$Component) {
       (0, _Utils.setRef)(imageRefProp, ref);
     });
 
+    _defineProperty(_assertThisInitialized(_this), "resetZoom", function () {
+      _this.applyInitialTransform(ANIMATION_SPEED);
+    });
+
     return _this;
   }
 
@@ -464,24 +472,17 @@ function (_React$Component) {
           scale = _ref.scale;
 
       if (speed > 0) {
-        var frame = function frame() {
-          var translateY = top - _this3.state.top;
-          var translateX = left - _this3.state.left;
-          var translateScale = scale - _this3.state.scale;
-          var nextTransform = {
-            top: (0, _Utils.snapToTarget)(_this3.state.top + speed * translateY, top, 1),
-            left: (0, _Utils.snapToTarget)(_this3.state.left + speed * translateX, left, 1),
-            scale: (0, _Utils.snapToTarget)(_this3.state.scale + speed * translateScale, scale, 0.001)
-          }; //animation runs until we reach the target
-
-          if (!(0, _Utils.isEqualTransform)(nextTransform, _this3.state)) {
-            _this3.setState(nextTransform, function () {
-              return _this3.animation = requestAnimationFrame(frame);
-            });
-          }
-        };
-
-        this.animation = requestAnimationFrame(frame);
+        this.animation = new _between["default"]({
+          top: this.state.top,
+          left: this.state.left,
+          scale: this.state.scale
+        }, {
+          top: top,
+          left: left,
+          scale: scale
+        }).time(1000).easing(_between["default"].Easing.Quintic.InOut).on('update', function (value) {
+          _this3.setState(value);
+        });
       } else {
         this.setState({
           top: top,
@@ -489,10 +490,10 @@ function (_React$Component) {
           scale: scale
         });
       }
-    } //Returns constrained scale when requested scale is outside min/max with tolerance, otherwise returns requested scale
-
+    }
   }, {
     key: "getConstrainedScale",
+    //Returns constrained scale when requested scale is outside min/max with tolerance, otherwise returns requested scale
     value: function getConstrainedScale(requestedScale, tolerance) {
       var lowerBoundFactor = 1.0 - tolerance;
       var upperBoundFactor = 1.0 + tolerance;
@@ -654,7 +655,7 @@ function (_React$Component) {
     key: "cancelAnimation",
     value: function cancelAnimation() {
       if (this.animation) {
-        cancelAnimationFrame(this.animation);
+        this.animation.pause();
       }
     }
   }, {

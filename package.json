@@ -53,6 +53,8 @@
     "url": "git@github.com:bradstiff/react-responsive-pinch-zoom-pan.git"
   },
   "dependencies": {
+    "between.js": "^0.1.2-fix.2",
+    "easing-functions": "^1.0.1",
     "reselect": "^4.0.0",
     "warning": "^4.0.2"
   },

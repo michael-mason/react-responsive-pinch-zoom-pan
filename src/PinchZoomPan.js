@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { createSelector } from 'reselect';
 import warning from 'warning';
+import Between from 'between.js';
+import Easing from 'easing-functions';
 
 import DebugView from './StateDebugView';
 
@@ -371,23 +373,12 @@ export default class PinchZoomPan extends React.Component {
 
     applyTransform({ top, left, scale }, speed) {
         if (speed > 0) {
-            const frame = () => {
-                const translateY = top - this.state.top;
-                const translateX = left - this.state.left;
-                const translateScale = scale - this.state.scale;
-
-                const nextTransform = {
-                    top: snapToTarget(this.state.top + (speed * translateY), top, 1),
-                    left: snapToTarget(this.state.left + (speed * translateX), left, 1),
-                    scale: snapToTarget(this.state.scale + (speed * translateScale), scale, 0.001),
-                };
-
-                //animation runs until we reach the target
-                if (!isEqualTransform(nextTransform, this.state)) {
-                    this.setState(nextTransform, () => this.animation = requestAnimationFrame(frame));
-                }
-            };
-            this.animation = requestAnimationFrame(frame);
+          this.animation = new Between({top: this.state.top, left: this.state.left, scale: this.state.scale}, {top: top, left: left, scale: scale})
+            .time(1000)
+            .easing(Between.Easing.Quintic.InOut)
+            .on('update', (value) => {
+                 this.setState(value);
+            });
         } else {
             this.setState({
                 top,
@@ -395,6 +386,10 @@ export default class PinchZoomPan extends React.Component {
                 scale,
             });
         }
+    }
+
+    resetZoom = () => {
+      this.applyInitialTransform(ANIMATION_SPEED);
     }
 
     //Returns constrained scale when requested scale is outside min/max with tolerance, otherwise returns requested scale
@@ -508,22 +503,22 @@ export default class PinchZoomPan extends React.Component {
         };
 
         return (
-            <div style={containerStyle}>
-                {debug && <DebugView {...this.state} overflow={imageOverflow(this.state)} />}
-                {React.cloneElement(childElement, {
-                    onTouchStart: this.handleTouchStart,
-                    onTouchEnd: this.handleTouchEnd,
-                    onMouseDown: this.handleMouseDown,
-                    onMouseMove: this.handleMouseMove,
-                    onDoubleClick: this.handleMouseDoubleClick,
-                    onWheel: this.handleMouseWheel,
-                    onDragStart: tryCancelEvent,
-                    onLoad: this.handleImageLoad,
-                    onContextMenu: tryCancelEvent,
-                    ref: this.handleRefImage,
-                    style: imageStyle(this.state)
-                })}
-            </div>
+          <div style={containerStyle}>
+              {debug && <DebugView {...this.state} overflow={imageOverflow(this.state)} />}
+              {React.cloneElement(childElement, {
+                  onTouchStart: this.handleTouchStart,
+                  onTouchEnd: this.handleTouchEnd,
+                  onMouseDown: this.handleMouseDown,
+                  onMouseMove: this.handleMouseMove,
+                  onDoubleClick: this.handleMouseDoubleClick,
+                  onWheel: this.handleMouseWheel,
+                  onDragStart: tryCancelEvent,
+                  onLoad: this.handleImageLoad,
+                  onContextMenu: tryCancelEvent,
+                  ref: this.handleRefImage,
+                  style: imageStyle(this.state)
+              })}
+          </div>
         );
     }
 
@@ -583,7 +578,7 @@ export default class PinchZoomPan extends React.Component {
 
     cancelAnimation() {
         if (this.animation) {
-            cancelAnimationFrame(this.animation);
+            this.animation.pause();
         }
     }
 
