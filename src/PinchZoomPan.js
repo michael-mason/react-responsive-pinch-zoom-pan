@@ -9,6 +9,12 @@ import DebugView from './StateDebugView';
 
 import { snapToTarget, negate, constrain, getPinchLength, getPinchMidpoint, getRelativePosition, setRef, isEqualDimensions, getDimensions, getContainerDimensions, isEqualTransform, getAutofitScale, getMinScale, tryCancelEvent, getImageOverflow } from './Utils';
 
+export const PinchZoomPanContext = React.createContext({
+  left: 0,
+  top: 0,
+  scale: 1,
+});
+
 const OVERZOOM_TOLERANCE = 0.0;
 const DOUBLE_TAP_THRESHOLD = 250;
 const ANIMATION_SPEED = 0.1;
@@ -489,7 +495,7 @@ export default class PinchZoomPan extends React.Component {
     render() {
         const childElement = React.Children.only(this.props.children);
         const { maxScale, debug } = this.props;
-        const { scale } = this.state;
+        const { top, left, scale } = this.state;
 
         const touchAction = this.controlOverscrollViaCss
             ? browserPanActions(this.state) || 'none'
@@ -503,22 +509,24 @@ export default class PinchZoomPan extends React.Component {
         };
 
         return (
-          <div style={containerStyle}>
-              {debug && <DebugView {...this.state} overflow={imageOverflow(this.state)} />}
-              {React.cloneElement(childElement, {
-                  onTouchStart: this.handleTouchStart,
-                  onTouchEnd: this.handleTouchEnd,
-                  onMouseDown: this.handleMouseDown,
-                  onMouseMove: this.handleMouseMove,
-                  onDoubleClick: this.handleMouseDoubleClick,
-                  onWheel: this.handleMouseWheel,
-                  onDragStart: tryCancelEvent,
-                  onLoad: this.handleImageLoad,
-                  onContextMenu: tryCancelEvent,
-                  ref: this.handleRefImage,
-                  style: imageStyle(this.state)
-              })}
-          </div>
+          <PinchZoomPanContext.Provider value={{top, left, scale}}>
+            <div style={containerStyle}>
+                {debug && <DebugView {...this.state} overflow={imageOverflow(this.state)} />}
+                {React.cloneElement(childElement, {
+                    onTouchStart: this.handleTouchStart,
+                    onTouchEnd: this.handleTouchEnd,
+                    onMouseDown: this.handleMouseDown,
+                    onMouseMove: this.handleMouseMove,
+                    onDoubleClick: this.handleMouseDoubleClick,
+                    onWheel: this.handleMouseWheel,
+                    onDragStart: tryCancelEvent,
+                    onLoad: this.handleImageLoad,
+                    onContextMenu: tryCancelEvent,
+                    ref: this.handleRefImage,
+                    style: imageStyle(this.state)
+                })}
+            </div>
+          </PinchZoomPanContext.Provider>
         );
     }
 

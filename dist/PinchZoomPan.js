@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports["default"] = void 0;
+exports["default"] = exports.PinchZoomPanContext = void 0;
 
 var _react = _interopRequireDefault(require("react"));
 
@@ -49,6 +49,13 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+var PinchZoomPanContext = _react["default"].createContext({
+  left: 0,
+  top: 0,
+  scale: 1
+});
+
+exports.PinchZoomPanContext = PinchZoomPanContext;
 var OVERZOOM_TOLERANCE = 0.0;
 var DOUBLE_TAP_THRESHOLD = 250;
 var ANIMATION_SPEED = 0.1;
@@ -593,7 +600,10 @@ function (_React$Component) {
       var _this$props3 = this.props,
           maxScale = _this$props3.maxScale,
           debug = _this$props3.debug;
-      var scale = this.state.scale;
+      var _this$state4 = this.state,
+          top = _this$state4.top,
+          left = _this$state4.left,
+          scale = _this$state4.scale;
       var touchAction = this.controlOverscrollViaCss ? browserPanActions(this.state) || 'none' : undefined;
       var containerStyle = {
         width: '100%',
@@ -601,7 +611,13 @@ function (_React$Component) {
         overflow: 'hidden',
         touchAction: touchAction
       };
-      return _react["default"].createElement("div", {
+      return _react["default"].createElement(PinchZoomPanContext.Provider, {
+        value: {
+          top: top,
+          left: left,
+          scale: scale
+        }
+      }, _react["default"].createElement("div", {
         style: containerStyle
       }, debug && _react["default"].createElement(_StateDebugView["default"], _extends({}, this.state, {
         overflow: imageOverflow(this.state)
@@ -617,7 +633,7 @@ function (_React$Component) {
         onContextMenu: _Utils.tryCancelEvent,
         ref: this.handleRefImage,
         style: imageStyle(this.state)
-      }));
+      })));
     }
   }, {
     key: "componentDidMount",
@@ -641,9 +657,9 @@ function (_React$Component) {
     key: "calculateNegativeSpace",
     value: function calculateNegativeSpace(scale) {
       //get difference in dimension between container and scaled image
-      var _this$state4 = this.state,
-          containerDimensions = _this$state4.containerDimensions,
-          imageDimensions = _this$state4.imageDimensions;
+      var _this$state5 = this.state,
+          containerDimensions = _this$state5.containerDimensions,
+          imageDimensions = _this$state5.imageDimensions;
       var width = containerDimensions.width - scale * imageDimensions.width;
       var height = containerDimensions.height - scale * imageDimensions.height;
       return {
